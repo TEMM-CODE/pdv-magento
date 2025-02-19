@@ -1,16 +1,27 @@
 export interface User {
   id: number;
-  name: string;
+  firstname: string;
+  lastname: string;
   email: string;
   role: UserRole;
   phone: string;
-  document: string;
+  taxvat: string;
   address?: string;
 }
 
-export type UserRole = 'ADMIN' | 'SUPERVISOR' | 'CASHIER' | 'CUSTOMER' | 'EMPLOYEE';
+export type UserRole =
+  | "ADMIN"
+  | "SUPERVISOR"
+  | "CASHIER"
+  | "CUSTOMER"
+  | "EMPLOYEE";
 
-export type LayoutRole = "admin" | "employee" | "customer" | "supervisor" | "self-service";
+export type LayoutRole =
+  | "admin"
+  | "employee"
+  | "customer"
+  | "supervisor"
+  | "self-service";
 
 export interface Product {
   id: number;
@@ -41,15 +52,15 @@ export interface Sale {
   employeeId: number;
   employeeName: string;
   date: string;
-  status: 'COMPLETED' | 'CANCELLED';
-  paymentMethod: 'CREDIT' | 'DEBIT' | 'CASH' | 'PIX';
+  status: "COMPLETED" | "CANCELLED";
+  paymentMethod: "CREDIT" | "DEBIT" | "CASH" | "PIX";
 }
 
 export interface SupervisorOperation {
   id: number;
   type: string;
   amount: number;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  status: "PENDING" | "APPROVED" | "REJECTED";
   requestedBy: number;
   timestamp: string;
   registerId: number;
