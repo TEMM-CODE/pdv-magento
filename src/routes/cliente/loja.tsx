@@ -2,39 +2,46 @@ import { Layout } from "@/components/layout/Layout";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/services/api";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { ShoppingCart } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import { Product } from "@/types";
+import { Product, ProductList } from "@/types";
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/cliente/loja')({
+export const Route = createFileRoute("/cliente/loja")({
   component: Store,
-})
+});
 
 export default function Store() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
-  const { data: products, isLoading } = useQuery<Product[]>({
-    queryKey: ['products'],
+  const { data: products, isLoading } = useQuery<ProductList>({
+    queryKey: ["products"],
     queryFn: () => api.getProducts(),
   });
 
-  const filteredProducts = products?.filter(product => 
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProducts = products?.items.filter(
+    (product) =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const addToCart = (productId: number) => {
     toast({
-      title: 'Produto adicionado ao carrinho',
-      description: 'O produto foi adicionado ao seu carrinho com sucesso!',
-    })
-  }
+      title: "Produto adicionado ao carrinho",
+      description: "O produto foi adicionado ao seu carrinho com sucesso!",
+    });
+  };
 
   if (isLoading) {
     return (
@@ -43,7 +50,7 @@ export default function Store() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
       </Layout>
-    )
+    );
   }
 
   return (
@@ -108,5 +115,5 @@ export default function Store() {
         )}
       </div>
     </Layout>
-  )
+  );
 }

@@ -36,6 +36,10 @@ export interface Product {
   imageUrl: string;
 }
 
+export interface ProductList {
+  items: Product[];
+}
+
 export interface CartItem {
   id: number;
   productId: number;
