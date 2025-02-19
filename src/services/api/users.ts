@@ -1,49 +1,10 @@
 import { User } from "@/types";
 import { delay } from "./utils";
 
+export const API_URL = import.meta.env.VITE_API_URL as string;
+
 // Mock users data
-const mockUsers: User[] = [
-  {
-    id: 1,
-    name: 'João Silva',
-    email: 'joao@example.com',
-    role: 'ADMIN',
-    phone: '11999999999',
-    document: '123.456.789-00'
-  },
-  {
-    id: 2,
-    name: 'Maria Santos',
-    email: 'maria@example.com',
-    role: 'SUPERVISOR',
-    phone: '11988888888',
-    document: '987.654.321-00'
-  },
-  {
-    id: 3,
-    name: 'Pedro Oliveira',
-    email: 'pedro@example.com',
-    role: 'CASHIER',
-    phone: '11977777777',
-    document: '456.789.123-00'
-  },
-  {
-    id: 4,
-    name: 'Ana Costa',
-    email: 'ana@example.com',
-    role: 'CASHIER',
-    phone: '11966666666',
-    document: '789.123.456-00'
-  },
-  {
-    id: 5,
-    name: 'Carlos Ferreira',
-    email: 'carlos@example.com',
-    role: 'CASHIER',
-    phone: '11955555555',
-    document: '321.654.987-00'
-  }
-];
+const mockUsers: User[] = [];
 
 export const userApi = {
   async getUsers(): Promise<User[]> {
@@ -53,33 +14,48 @@ export const userApi = {
 
   async getUser(id: number): Promise<User> {
     await delay(500);
-    const user = mockUsers.find(u => u.id === id);
-    if (!user) throw new Error('Usuário não encontrado');
+    const user = mockUsers.find((u) => u.id === id);
+    if (!user) throw new Error("Usuário não encontrado");
     return user;
   },
 
-  async createUser(user: Omit<User, 'id'>): Promise<User> {
-    await delay(500);
+  async createUser(
+    user: Omit<User, "id" | "role" | "adress">,
+    password: string
+  ): Promise<User> {
     const newUser = {
-      id: mockUsers.length + 1,
-      ...user
+      customer: {
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+        taxvat: user.taxvat,
+      },
+      password: password,
     };
-    mockUsers.push(newUser);
-    return newUser;
+
+    const response = await fetch(`${API_URL}/customers`, {
+      method: "POST",
+      body: JSON.stringify(newUser),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.json();
   },
 
   async updateUser(id: number, user: Partial<User>): Promise<User> {
     await delay(500);
-    const index = mockUsers.findIndex(u => u.id === id);
-    if (index === -1) throw new Error('Usuário não encontrado');
+    const index = mockUsers.findIndex((u) => u.id === id);
+    if (index === -1) throw new Error("Usuário não encontrado");
     mockUsers[index] = { ...mockUsers[index], ...user };
     return mockUsers[index];
   },
 
   async deleteUser(id: number): Promise<void> {
     await delay(500);
-    const index = mockUsers.findIndex(u => u.id === id);
-    if (index === -1) throw new Error('Usuário não encontrado');
+    const index = mockUsers.findIndex((u) => u.id === id);
+    if (index === -1) throw new Error("Usuário não encontrado");
     mockUsers.splice(index, 1);
   },
 };
