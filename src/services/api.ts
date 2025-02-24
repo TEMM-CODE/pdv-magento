@@ -78,6 +78,7 @@ const mockPendingOperations: SupervisorOperation[] = [
     amount: 500,
     status: "PENDING",
     timestamp: new Date().toISOString(),
+    requestedBy: 0,
   },
   {
     id: 2,
@@ -86,6 +87,7 @@ const mockPendingOperations: SupervisorOperation[] = [
     amount: 200,
     status: "PENDING",
     timestamp: new Date().toISOString(),
+    requestedBy: 0,
   },
 ];
 
