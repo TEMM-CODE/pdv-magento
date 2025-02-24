@@ -15,6 +15,7 @@ export const api = {
   // Product API methods
   getProducts: productApi.getProducts,
   getProduct: productApi.getProduct,
+  getProductsByIds: productApi.getProductsByIds,
   createProduct: productApi.createProduct,
   updateProduct: productApi.updateProduct,
   deleteProduct: productApi.deleteProduct,

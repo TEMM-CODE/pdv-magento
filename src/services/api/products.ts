@@ -15,10 +15,22 @@ export const productApi = {
   },
 
   async getProduct(id: number): Promise<Product> {
-    await delay(500);
-    const product = mockProducts.find((p) => p.id === id);
-    if (!product) throw new Error("Produto não encontrado");
-    return product;
+    return axiosApi
+      .get<Product>(
+        `/products?searchCriteria[filter_groups][0][filters][0][field]=entity_id&searchCriteria[filter_groups][0][filters][0][value]=${id}&searchCriteria[filter_groups][0][filters][0][condition_type]=eq`
+      )
+      .then((response) => response.data);
+  },
+
+  async getProductsByIds(ids: number[]): Promise<Product[]> {
+    return axiosApi
+      .get<Product[]>(
+        `/products
+  ?searchCriteria[filter_groups][0][filters][0][field]=entity_id
+  &searchCriteria[filter_groups][0][filters][0][value]=${ids.join(",")}
+  &searchCriteria[filter_groups][0][filters][0][condition_type]=in`
+      )
+      .then((response) => response.data);
   },
 
   async createProduct(product: Omit<Product, "id">): Promise<Product> {
