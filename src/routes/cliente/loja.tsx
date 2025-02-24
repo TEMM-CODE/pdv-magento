@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import { ProductList } from "@/types";
 
 import { createFileRoute } from "@tanstack/react-router";
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/hooks/use-cart";
 
 export const Route = createFileRoute("/cliente/loja")({
   component: Store,

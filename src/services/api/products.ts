@@ -22,15 +22,10 @@ export const productApi = {
       .then((response) => response.data);
   },
 
-  async getProductsByIds(ids: number[]): Promise<Product[]> {
-    return axiosApi
-      .get<Product[]>(
-        `/products
-  ?searchCriteria[filter_groups][0][filters][0][field]=entity_id
-  &searchCriteria[filter_groups][0][filters][0][value]=${ids.join(",")}
-  &searchCriteria[filter_groups][0][filters][0][condition_type]=in`
-      )
-      .then((response) => response.data);
+  async getProductsByIds(ids: number[]): Promise<ProductList> {
+    const idsWithCommas = ids.join(",");
+    const url = `/products?searchCriteria[filter_groups][0][filters][0][field]=entity_id&searchCriteria[filter_groups][0][filters][0][value]=${idsWithCommas}&searchCriteria[filter_groups][0][filters][0][condition_type]=in`;
+    return axiosApi.get<ProductList>(url).then((response) => response.data);
   },
 
   async createProduct(product: Omit<Product, "id">): Promise<Product> {
