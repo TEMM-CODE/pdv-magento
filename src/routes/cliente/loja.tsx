@@ -14,7 +14,7 @@ import { ShoppingCart } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import { Product, ProductList } from "@/types";
+import { ProductList } from "@/types";
 
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -30,10 +30,8 @@ export default function Store() {
     queryFn: () => api.getProducts(),
   });
 
-  const filteredProducts = products?.items.filter(
-    (product) =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProducts = products?.items.filter((product) =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const addToCart = (productId: number) => {
@@ -70,7 +68,7 @@ export default function Store() {
           <CardContent>
             <div className="flex gap-4">
               <div className="flex-1">
-                <Label htmlFor="search">Buscar por nome ou descrição</Label>
+                <Label htmlFor="search">Buscar por nome</Label>
                 <Input
                   id="search"
                   value={searchTerm}
@@ -90,7 +88,11 @@ export default function Store() {
               </CardHeader>
               <CardContent className="flex-1">
                 <p className="text-sm text-muted-foreground line-clamp-2">
-                  {product.description}
+                  {
+                    product.custom_attributes.find(
+                      (attr) => attr.attribute_code === "description"
+                    )?.value
+                  }
                 </p>
                 <p className="mt-4 text-2xl font-bold">
                   R$ {product.price.toFixed(2)}
