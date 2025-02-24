@@ -11,23 +11,25 @@ export const api = {
   rejectAuthorization: supervisorApi.rejectAuthorization,
   checkAuthorizationStatus: supervisorApi.checkAuthorizationStatus,
   requestAuthorization: supervisorApi.requestAuthorization,
-  
+
   // Product API methods
   getProducts: productApi.getProducts,
   getProduct: productApi.getProduct,
   createProduct: productApi.createProduct,
   updateProduct: productApi.updateProduct,
   deleteProduct: productApi.deleteProduct,
-  
+
   // User API methods
   getUsers: userApi.getUsers,
   getUser: userApi.getUser,
   createUser: userApi.createUser,
   updateUser: userApi.updateUser,
   deleteUser: userApi.deleteUser,
-  
+
   // Sales API methods
   getSales: salesApi.getSales,
 } as const;
+
+export default api;
 
 export type Api = typeof api;

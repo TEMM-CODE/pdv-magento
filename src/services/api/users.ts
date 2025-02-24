@@ -1,7 +1,6 @@
 import { User } from "@/types";
 import { delay } from "./utils";
-
-export const API_URL = import.meta.env.VITE_API_URL as string;
+import { axiosApi } from "../api";
 
 // Mock users data
 const mockUsers: User[] = [];
@@ -33,15 +32,9 @@ export const userApi = {
       password: password,
     };
 
-    const response = await fetch(`${API_URL}/customers`, {
-      method: "POST",
-      body: JSON.stringify(newUser),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    return response.json();
+    return axiosApi
+      .post<User>("/customers", newUser)
+      .then((response) => response.data);
   },
 
   async updateUser(id: number, user: Partial<User>): Promise<User> {
