@@ -13,10 +13,11 @@ import { useToast } from "@/components/ui/use-toast";
 import { ShoppingCart } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ProductList } from "@/types";
 
 import { createFileRoute } from "@tanstack/react-router";
+import { useCart } from "@/context/CartContext";
 
 export const Route = createFileRoute("/cliente/loja")({
   component: Store,
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/cliente/loja")({
 export default function Store() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
+  const { addToCart, removeFromCart, cart } = useCart();
   const { data: products, isLoading } = useQuery<ProductList>({
     queryKey: ["products"],
     queryFn: () => api.getProducts(),
@@ -34,12 +36,7 @@ export default function Store() {
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const addToCart = (productId: number) => {
-    toast({
-      title: "Produto adicionado ao carrinho",
-      description: "O produto foi adicionado ao seu carrinho com sucesso!",
-    });
-  };
+  useEffect(() => console.log(cart), [cart]);
 
   if (isLoading) {
     return (
@@ -99,12 +96,35 @@ export default function Store() {
                 </p>
               </CardContent>
               <CardFooter>
-                <Button
-                  className="w-full"
-                  onClick={() => addToCart(product.id)}
-                >
-                  Adicionar ao Carrinho
-                </Button>
+                {cart.find((id) => id === product.id) ? (
+                  <Button
+                    className="w-full"
+                    onClick={() => {
+                      removeFromCart(product.id);
+                      toast({
+                        title: "Produto removido do carrinho",
+                        description:
+                          "O produto foi removido do seu carrinho com sucesso!",
+                      });
+                    }}
+                  >
+                    Remover do Carrinho
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-full"
+                    onClick={() => {
+                      addToCart(product.id);
+                      toast({
+                        title: "Produto adicionado ao carrinho",
+                        description:
+                          "O produto foi adicionado ao seu carrinho com sucesso!",
+                      });
+                    }}
+                  >
+                    Adicionar ao Carrinho
+                  </Button>
+                )}
               </CardFooter>
             </Card>
           ))}
