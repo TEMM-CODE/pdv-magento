@@ -1,11 +1,5 @@
 import { CartContext } from "@/hooks/use-cart";
-import { createContext, useEffect, useState } from "react";
-
-export type CartContextType = {
-  cart: number[];
-  addToCart: (itemId: number) => void;
-  removeFromCart: (itemId: number) => void;
-};
+import { useEffect, useState } from "react";
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [cart, setCart] = useState([] as number[]);

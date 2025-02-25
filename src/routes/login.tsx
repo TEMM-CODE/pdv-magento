@@ -32,9 +32,11 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      await authService.login({ email, password });
+      await authService
+        .login({ email, password })
+        .then((token) => localStorage.setItem("token", token));
 
-      navigate({ to: "/cliente" });
+      navigate({ to: "/cliente", replace: true });
 
       toast({
         title: "Login realizado com sucesso!",
