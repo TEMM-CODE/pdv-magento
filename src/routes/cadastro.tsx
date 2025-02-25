@@ -13,8 +13,8 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Mail, User, Phone, Lock, ShieldCheck } from "lucide-react";
 import { userApi } from "@/services/api/users";
-
 import { createFileRoute } from "@tanstack/react-router";
+import InputMask from "react-input-mask";
 
 export const Route = createFileRoute("/cadastro")({
   component: Register,
@@ -36,7 +36,7 @@ export default function Register() {
     setIsLoading(true);
 
     try {
-      userApi.createUser(
+      await userApi.createUser(
         {
           firstname: firstName,
           lastname: lastName,
@@ -59,7 +59,7 @@ export default function Register() {
         title: "Erro ao criar conta",
         description: "Verifique os dados e tente novamente.",
       });
-      console.log(error);
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -125,33 +125,44 @@ export default function Register() {
               <Label htmlFor="vatNumber">CPF</Label>
               <div className="relative">
                 <ShieldCheck className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                <Input
-                  id="vatNumber"
-                  type="text"
-                  pattern="[0-9]+$"
-                  maxLength={11}
-                  minLength={11}
-                  placeholder="Digite seu CPF sem pontos ou traços"
+                <InputMask
+                  mask="999.999.999-99"
                   value={vatNumber}
                   onChange={(e) => setVatNumber(e.target.value)}
-                  className="pl-10"
-                  required
-                />
+                >
+                  {(inputProps) => (
+                    <Input
+                      id="vatNumber"
+                      type="text"
+                      placeholder="000.000.000-00"
+                      className="pl-10"
+                      required
+                      {...inputProps}
+                    />
+                  )}
+                </InputMask>
               </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="phone">Telefone</Label>
               <div className="relative">
                 <Phone className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="(11) 99999-9999"
+                <InputMask
+                  mask="(99) 99999-9999"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="pl-10"
-                  required
-                />
+                >
+                  {(inputProps) => (
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="(11) 99999-9999"
+                      className="pl-10"
+                      required
+                      {...inputProps}
+                    />
+                  )}
+                </InputMask>
               </div>
             </div>
             <div className="space-y-2">
