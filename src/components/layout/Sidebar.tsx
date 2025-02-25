@@ -7,6 +7,7 @@ import { EmployeeMenu } from "./sidebar/EmployeeMenu";
 import { CustomerMenu } from "./sidebar/CustomerMenu";
 import { SupervisorMenu } from "./sidebar/SupervisorMenu";
 import { LayoutRole } from "@/types";
+import { useNavigate } from "@tanstack/react-router";
 
 interface SidebarProps {
   role: LayoutRole;
@@ -16,6 +17,7 @@ export function Sidebar({ role }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const navigate = useNavigate();
 
   const MenuComponent = {
     admin: AdminMenu,
@@ -40,6 +42,13 @@ export function Sidebar({ role }: SidebarProps) {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate({ to: "/login", replace: true });
+    }
+  }, [navigate]);
 
   return (
     <>
