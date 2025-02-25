@@ -1,12 +1,14 @@
 import { LoginCredentials } from "@/types/auth";
-import { API_URL } from "./api/users";
+import { API_URL, axiosApi } from "./api";
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<string> {
-    const token = await fetch(`${API_URL}/integration/customer/token`, {
-      body: JSON.stringify(credentials),
-      method: "POST",
-    }).then((response) => response.json());
+    const token = axiosApi
+      .post<string>(`${API_URL}/integration/customer/token`, {
+        username: credentials.email,
+        password: credentials.password,
+      })
+      .then((response) => response.data);
 
     if (!token) {
       throw new Error("Usuário não encontrado");

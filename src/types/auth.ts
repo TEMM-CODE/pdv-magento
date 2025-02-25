@@ -8,7 +8,7 @@ export interface AuthResponse {
     id: number;
     name: string;
     email: string;
-    role: 'ADMIN' | 'EMPLOYEE' | 'CUSTOMER';
+    role: "ADMIN" | "EMPLOYEE" | "CUSTOMER";
   };
   token: string;
 }

@@ -1,11 +1,11 @@
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-
 import { routeTree } from "./routeTree.gen";
 
 import { Toaster } from "./components/ui/toaster";
 import { ThemeProvider } from "./context/ThemeContext";
+import { CartProvider } from "./context/CartContext";
 
 const router = createRouter({ routeTree });
 
@@ -20,7 +20,9 @@ export function App() {
   return (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
+        <CartProvider>
+          <RouterProvider router={router} />
+        </CartProvider>
         <Toaster />
       </QueryClientProvider>
     </ThemeProvider>
