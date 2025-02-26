@@ -38,10 +38,14 @@ export function Header() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem onClick={() => navigate("/cliente/perfil")}>
+            <DropdownMenuItem
+              onClick={() => navigate({ to: "/cliente/perfil" })}
+            >
               Meu Perfil
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate("/admin/configuracoes")}>
+            <DropdownMenuItem
+              onClick={() => navigate({ to: "/admin/configuracoes" })}
+            >
               Configurações
             </DropdownMenuItem>
             <DropdownMenuItem className="text-red-600">Sair</DropdownMenuItem>

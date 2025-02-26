@@ -9,4 +9,12 @@ export const axiosApi = axios.create({
   },
 });
 
+axiosApi.interceptors.request.use((config) => {
+  if (localStorage.getItem("token")) {
+    config.headers.Authorization = `Bearer ${localStorage.getItem("token")}`;
+  }
+
+  return config;
+});
+
 export { default as api } from "./api/index";

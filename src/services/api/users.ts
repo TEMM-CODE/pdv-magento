@@ -11,11 +11,10 @@ export const userApi = {
     return mockUsers;
   },
 
-  async getUser(id: number): Promise<User> {
-    await delay(500);
-    const user = mockUsers.find((u) => u.id === id);
-    if (!user) throw new Error("Usuário não encontrado");
-    return user;
+  async getUser(): Promise<User> {
+    return axiosApi
+      .get<User>(`/customers/me`)
+      .then((response) => response.data);
   },
 
   async createUser(
