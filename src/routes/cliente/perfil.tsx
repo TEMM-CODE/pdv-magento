@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import { MaskedInput } from "@/components/ui/masked-input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -10,9 +9,39 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/services/api";
 import { Controller, useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export const Route = createFileRoute("/cliente/perfil")({
   component: Profile,
+});
+
+const userFormSchema = z.object({
+  firstName: z
+    .string()
+    .nonempty("Obrigatório")
+    .regex(/^[A-Za-z]+$/i, "Somente letras são permitidas"),
+  lastName: z
+    .string()
+    .nonempty("Obrigatório")
+    .regex(/^[A-Za-z]+$/i, "Somente letras são permitidas"),
+  email: z.string().email("Email inválido"),
+  phone: z
+    .string()
+    .regex(/[0-9]+$/, "Somente números são permitidos")
+    .min(11, "Telefone inválido")
+    .max(11, "Telefone inválido"),
+  postcode: z
+    .string()
+    .regex(/[0-9]+$/, "Somente números são permitidos")
+    .optional(),
+  taxvat: z
+    .string()
+    .regex(/[0-9]+$/, "Somente números são permitidos")
+    .min(11, "CPF inválido")
+    .max(11, "CPF inválido")
+    .nonempty("Obrigatório"),
+  addresses: z.array(z.string()).optional(),
 });
 
 export default function Profile() {
@@ -24,7 +53,11 @@ export default function Profile() {
     queryFn: () => api.getUser(),
   });
 
-  const { control } = useForm({
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<z.infer<typeof userFormSchema>>({
     defaultValues: {
       firstName: user?.firstname || "",
       lastName: user?.lastname || "",
@@ -32,14 +65,14 @@ export default function Profile() {
       phone: user?.phone || "",
       taxvat: user?.taxvat || "",
       postcode: user?.addresses?.[0]?.postcode || "",
-      addresses: user?.addresses?.[0]?.street || "",
+      addresses: user?.addresses?.[0]?.street || [""],
     },
+    resolver: zodResolver(userFormSchema),
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: z.infer<typeof userFormSchema>) => {
     setIsLoading(true);
-
+    console.log(data);
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -67,14 +100,19 @@ export default function Profile() {
             <CardTitle>Meus dados</CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <Controller
                 control={control}
                 name="firstName"
                 render={({ field }) => (
                   <div {...field} className="space-y-2">
                     <Label htmlFor="firstName">Nome</Label>
-                    <Input id="firstName" value={user?.firstname} />
+                    <Input id="firstName" defaultValue={user?.firstname} />
+                    {errors.firstName && (
+                      <small className="text-xs font-medium leading-none text-red-700">
+                        {errors.firstName.message}
+                      </small>
+                    )}
                   </div>
                 )}
               />
@@ -85,7 +123,12 @@ export default function Profile() {
                 render={({ field }) => (
                   <div {...field} className="space-y-2">
                     <Label htmlFor="lastName">Sobrenome</Label>
-                    <Input id="lastName" value={user?.lastname} />
+                    <Input id="lastName" defaultValue={user?.lastname} />
+                    {errors.lastName && (
+                      <small className="text-xs font-medium leading-none text-red-700">
+                        {errors.lastName.message}
+                      </small>
+                    )}
                   </div>
                 )}
               />
@@ -96,7 +139,12 @@ export default function Profile() {
                 render={({ field }) => (
                   <div {...field} className="space-y-2">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" value={user?.email} />
+                    <Input id="email" defaultValue={user?.email} />
+                    {errors.email && (
+                      <small className="text-xs font-medium leading-none text-red-700">
+                        {errors.email.message}
+                      </small>
+                    )}
                   </div>
                 )}
               />
@@ -107,7 +155,12 @@ export default function Profile() {
                 render={({ field }) => (
                   <div {...field} className="space-y-2">
                     <Label htmlFor="phone">Telefone</Label>
-                    <Input id="phone" value={user?.phone} />
+                    <Input id="phone" defaultValue={user?.phone} />
+                    {errors.phone && (
+                      <small className="text-xs font-medium leading-none text-red-700">
+                        {errors.phone.message}
+                      </small>
+                    )}
                   </div>
                 )}
               />
@@ -118,7 +171,12 @@ export default function Profile() {
                 render={({ field }) => (
                   <div {...field} className="space-y-2">
                     <Label htmlFor="taxvat">CPF</Label>
-                    <Input id="taxvat" value={user?.taxvat} />
+                    <Input id="taxvat" defaultValue={user?.taxvat} />
+                    {errors.taxvat && (
+                      <small className="text-sm font-medium leading-none text-red-700">
+                        {errors.taxvat.message}
+                      </small>
+                    )}
                   </div>
                 )}
               />
@@ -131,21 +189,37 @@ export default function Profile() {
                     <Label htmlFor="postcode">CEP</Label>
                     <Input
                       id="postcode"
-                      value={user?.addresses?.[0]?.postcode}
+                      defaultValue={user?.addresses?.[0]?.postcode}
                     />
+                    {errors.postcode && (
+                      <small className="text-xs font-medium leading-none text-red-700">
+                        {errors.postcode.message}
+                      </small>
+                    )}
                   </div>
                 )}
               />
               <Controller
                 control={control}
                 name="addresses"
-                render={({ field }) => (
-                  <div {...field} className="space-y-2">
+                defaultValue={[""]} // Set default value as array
+                render={({ field: { onChange, value, ...fieldProps } }) => (
+                  <div className="space-y-2">
                     <Label htmlFor="addresses">Endereço</Label>
                     <Input
+                      {...fieldProps}
                       id="addresses"
-                      value={user?.addresses?.[0]?.street}
+                      value={Array.isArray(value) ? value[0] || "" : ""}
+                      onChange={(e) => {
+                        const newValue = [e.target.value];
+                        onChange(newValue);
+                      }}
                     />
+                    {errors.addresses && (
+                      <small className="text-xs font-medium leading-none text-red-700">
+                        {errors.addresses.message}
+                      </small>
+                    )}
                   </div>
                 )}
               />
