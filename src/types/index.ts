@@ -6,7 +6,31 @@ export interface User {
   role: UserRole;
   phone: string;
   taxvat: string;
-  address?: string;
+  addresses?: Array<{
+    region: {
+      region_code: string;
+      region: string;
+      region_id: number;
+      extension_attributes: object;
+    };
+    region_id: number;
+    country_id: string;
+    street: Array<string>;
+    company: string;
+    telephone: string;
+    fax: string;
+    postcode: string;
+    city: string;
+    firstname: string;
+    lastname: string;
+    middlename: string;
+    prefix: string;
+    suffix: string;
+    vat_id: string;
+    default_shipping: boolean;
+    default_billing: boolean;
+    extension_attributes: object;
+  }>;
 }
 
 export type UserRole =
