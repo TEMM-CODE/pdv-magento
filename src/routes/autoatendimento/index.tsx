@@ -1,7 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/services/api";
-import { Product } from "@/types";
+import { Product, ProductList } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,29 +9,28 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/autoatendimento/')({
+export const Route = createFileRoute("/autoatendimento/")({
   component: Store,
-})
+});
 
 export default function Store() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
-  const { data: products, isLoading } = useQuery<Product[]>({
-    queryKey: ['products'],
+  const { data: products, isLoading } = useQuery<ProductList>({
+    queryKey: ["products"],
     queryFn: () => api.getProducts(),
   });
 
-  const filteredProducts = products?.filter(product => 
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProducts = products?.items.filter((product) =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleProductSelect = (product: Product) => {
     toast({
       title: "Produto selecionado",
-      description: `${product.name} foi adicionado ao seu pedido.`
+      description: `${product.name} foi adicionado ao seu pedido.`,
     });
   };
 
@@ -57,7 +56,7 @@ export default function Store() {
           <CardContent>
             <div className="flex gap-4">
               <div className="flex-1">
-                <Label htmlFor="search">Buscar por nome ou descrição</Label>
+                <Label htmlFor="search">Buscar por nome</Label>
                 <Input
                   id="search"
                   value={searchTerm}
@@ -71,23 +70,25 @@ export default function Store() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts?.map((product) => (
-            <Card 
-              key={product.id} 
+            <Card
+              key={product.id}
               className="cursor-pointer hover:bg-accent transition-colors"
               onClick={() => handleProductSelect(product)}
             >
               <CardContent className="p-4">
                 <h3 className="font-medium line-clamp-1">{product.name}</h3>
                 <p className="text-sm text-muted-foreground line-clamp-2 mt-2">
-                  {product.description}
+                  {
+                    product.custom_attributes.find(
+                      (attr) => attr.attribute_code === "description"
+                    )?.value
+                  }
                 </p>
                 <div className="mt-4 flex justify-between items-center">
                   <p className="text-xl font-bold">
                     R$ {product.price.toFixed(2)}
                   </p>
-                  <p className="text-sm text-muted-foreground">
-                    Estoque: {product.stock}
-                  </p>
+                  <p className="text-sm text-muted-foreground">Estoque: 1</p>
                 </div>
               </CardContent>
             </Card>
