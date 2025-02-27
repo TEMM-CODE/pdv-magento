@@ -36,12 +36,10 @@ export const userApi = {
       .then((response) => response.data);
   },
 
-  async updateUser(id: number, user: Partial<User>): Promise<User> {
-    await delay(500);
-    const index = mockUsers.findIndex((u) => u.id === id);
-    if (index === -1) throw new Error("Usuário não encontrado");
-    mockUsers[index] = { ...mockUsers[index], ...user };
-    return mockUsers[index];
+  async updateUser(user: Partial<User>): Promise<User> {
+    return axiosApi
+      .put(`/customers/me`, user)
+      .then((response) => response.data);
   },
 
   async deleteUser(id: number): Promise<void> {
