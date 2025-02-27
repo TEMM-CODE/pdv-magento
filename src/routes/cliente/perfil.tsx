@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -55,6 +55,7 @@ export default function Profile() {
 
   const {
     control,
+    reset,
     formState: { errors },
     handleSubmit,
   } = useForm<z.infer<typeof userFormSchema>>({
@@ -69,6 +70,23 @@ export default function Profile() {
     },
     resolver: zodResolver(userFormSchema),
   });
+
+  // Atualiza o formulário quando `user` mudar
+  useEffect(() => {
+    if (user) {
+      reset({
+        firstName: user.firstname || "",
+        lastName: user.lastname || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        taxvat: user.taxvat || "",
+        postcode: user.addresses?.[0]?.postcode || "",
+        addresses: user.addresses?.[0]?.street
+          ? user.addresses[0].street
+          : [""],
+      });
+    }
+  }, [user, reset]); // Dispara sempre que `user` mudar
 
   const onSubmit = async (data: z.infer<typeof userFormSchema>) => {
     setIsLoading(true);
@@ -105,9 +123,9 @@ export default function Profile() {
                 control={control}
                 name="firstName"
                 render={({ field }) => (
-                  <div {...field} className="space-y-2">
+                  <div className="space-y-2">
                     <Label htmlFor="firstName">Nome</Label>
-                    <Input id="firstName" defaultValue={user?.firstname} />
+                    <Input {...field} id="firstName" />
                     {errors.firstName && (
                       <small className="text-xs font-medium leading-none text-red-700">
                         {errors.firstName.message}
@@ -121,9 +139,9 @@ export default function Profile() {
                 control={control}
                 name="lastName"
                 render={({ field }) => (
-                  <div {...field} className="space-y-2">
+                  <div className="space-y-2">
                     <Label htmlFor="lastName">Sobrenome</Label>
-                    <Input id="lastName" defaultValue={user?.lastname} />
+                    <Input {...field} id="lastName" />
                     {errors.lastName && (
                       <small className="text-xs font-medium leading-none text-red-700">
                         {errors.lastName.message}
@@ -137,9 +155,9 @@ export default function Profile() {
                 control={control}
                 name="email"
                 render={({ field }) => (
-                  <div {...field} className="space-y-2">
+                  <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" defaultValue={user?.email} />
+                    <Input {...field} id="email" />
                     {errors.email && (
                       <small className="text-xs font-medium leading-none text-red-700">
                         {errors.email.message}
@@ -153,9 +171,9 @@ export default function Profile() {
                 control={control}
                 name="phone"
                 render={({ field }) => (
-                  <div {...field} className="space-y-2">
+                  <div className="space-y-2">
                     <Label htmlFor="phone">Telefone</Label>
-                    <Input id="phone" defaultValue={user?.phone} />
+                    <Input id="phone" {...field} />
                     {errors.phone && (
                       <small className="text-xs font-medium leading-none text-red-700">
                         {errors.phone.message}
@@ -169,9 +187,9 @@ export default function Profile() {
                 control={control}
                 name="taxvat"
                 render={({ field }) => (
-                  <div {...field} className="space-y-2">
+                  <div className="space-y-2">
                     <Label htmlFor="taxvat">CPF</Label>
-                    <Input id="taxvat" defaultValue={user?.taxvat} />
+                    <Input id="taxvat" {...field} />
                     {errors.taxvat && (
                       <small className="text-sm font-medium leading-none text-red-700">
                         {errors.taxvat.message}
@@ -185,12 +203,9 @@ export default function Profile() {
                 control={control}
                 name="postcode"
                 render={({ field }) => (
-                  <div {...field} className="space-y-2">
+                  <div className="space-y-2">
                     <Label htmlFor="postcode">CEP</Label>
-                    <Input
-                      id="postcode"
-                      defaultValue={user?.addresses?.[0]?.postcode}
-                    />
+                    <Input id="postcode" {...field} />
                     {errors.postcode && (
                       <small className="text-xs font-medium leading-none text-red-700">
                         {errors.postcode.message}
@@ -202,17 +217,15 @@ export default function Profile() {
               <Controller
                 control={control}
                 name="addresses"
-                defaultValue={[""]} // Set default value as array
-                render={({ field: { onChange, value, ...fieldProps } }) => (
+                render={({ field }) => (
                   <div className="space-y-2">
                     <Label htmlFor="addresses">Endereço</Label>
                     <Input
-                      {...fieldProps}
+                      {...field}
                       id="addresses"
-                      value={Array.isArray(value) ? value[0] || "" : ""}
                       onChange={(e) => {
                         const newValue = [e.target.value];
-                        onChange(newValue);
+                        field.onChange(newValue);
                       }}
                     />
                     {errors.addresses && (
