@@ -37,8 +37,11 @@ export const userApi = {
   },
 
   async updateUser(user: Partial<User>): Promise<User> {
+    const newUser = {
+      customer: { ...user },
+    };
     return axiosApi
-      .put(`/customers/me`, user)
+      .put(`/customers/me`, newUser)
       .then((response) => response.data);
   },
 
