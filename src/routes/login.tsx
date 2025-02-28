@@ -32,11 +32,16 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      await authService
-        .login({ email, password })
-        .then((token) => localStorage.setItem("token", token));
+      await authService.login({ email, password }).then(({ token, role }) => {
+        localStorage.setItem("token", token);
+        localStorage.setItem("role", role);
+      });
 
-      navigate({ to: "/cliente", replace: true });
+      if (localStorage.getItem("role") === "customer")
+        navigate({ to: "/cliente", replace: true });
+
+      if (localStorage.getItem("role") === "admin")
+        navigate({ to: "/admin", replace: true });
 
       toast({
         title: "Login realizado com sucesso!",
