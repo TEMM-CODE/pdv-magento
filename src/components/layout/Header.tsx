@@ -48,7 +48,15 @@ export function Header() {
             >
               Configurações
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-red-600">Sair</DropdownMenuItem>
+            <DropdownMenuItem
+              className="text-red-600"
+              onClick={() => {
+                localStorage.removeItem("token");
+                navigate({ to: "/login" });
+              }}
+            >
+              Sair
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
