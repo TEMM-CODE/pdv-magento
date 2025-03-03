@@ -89,7 +89,7 @@ export default function CustomerProducts() {
                     <span>R$ {product.price.toFixed(2)}</span>
                   </div>
                   <CardFooter>
-                    {cart.find((id) => id === product.id) ? (
+                    {cart.find((item) => item.id === product.id) ? (
                       <Button
                         className="w-full"
                         onClick={() => {
