@@ -20,31 +20,10 @@ export const Route = createFileRoute("/cliente/carrinho")({
   component: Cart,
 });
 
-// Mock do carrinho - será substituído pela integração real
-const cartItems = [
-  {
-    id: 1,
-    productId: 1,
-    productName: "Coca-Cola 350ml",
-    quantity: 2,
-    price: 5.0,
-    subtotal: 10.0,
-    product: {
-      id: 1,
-      name: "Coca-Cola 350ml",
-      description: "Refrigerante Coca-Cola Lata 350ml",
-      price: 5.0,
-      stock: 100,
-      category: "Bebidas",
-    },
-  },
-];
-
 export default function Cart() {
-  const { cart, removeFromCart, increaseQuantity, decreaseQuantity } =
+  const { cart, total, removeFromCart, increaseQuantity, decreaseQuantity } =
     useCart();
   const navigate = useNavigate();
-  const total = cartItems.reduce((acc, item) => acc + item.subtotal, 0);
 
   const { data: products } = useQuery({
     queryKey: ["products", cart],

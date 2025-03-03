@@ -2,7 +2,10 @@ import { CartContext } from "@/hooks/use-cart";
 import { useEffect, useState } from "react";
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
-  const [cart, setCart] = useState<{ id: number; quantity: number }[]>([]);
+  const [cart, setCart] = useState<
+    { id: number; quantity: number; price: number }[]
+  >([]);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     const storedCart = localStorage.getItem("cart");
@@ -12,11 +15,19 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
+    let totalPrice = 0;
+    cart.forEach((item) => {
+      totalPrice += item.price * item.quantity;
+    });
+    setTotal(totalPrice);
+  }, [cart]);
+
+  useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
-  const addToCart = (itemId: number) => {
-    const newCart = [...cart, { id: itemId, quantity: 1 }];
+  const addToCart = (itemId: number, price: number) => {
+    const newCart = [...cart, { id: itemId, quantity: 1, price: price }];
     setCart(newCart);
     localStorage.setItem("cart", JSON.stringify(newCart));
   };
@@ -54,6 +65,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     <CartContext.Provider
       value={{
         cart,
+        total,
         addToCart,
         removeFromCart,
         increaseQuantity,

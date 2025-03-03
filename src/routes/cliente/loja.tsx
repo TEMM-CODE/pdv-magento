@@ -114,7 +114,7 @@ export default function Store() {
                   <Button
                     className="w-full"
                     onClick={() => {
-                      addToCart(product.id);
+                      addToCart(product.id, product.price);
                       toast({
                         title: "Produto adicionado ao carrinho",
                         description:
