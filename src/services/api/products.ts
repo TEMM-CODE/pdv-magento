@@ -1,4 +1,4 @@
-import { Product, ProductList } from "@/types";
+import { Product, ProductList, StockItem } from "@/types";
 import { delay } from "./utils";
 import { axiosApi } from "../api";
 
@@ -29,6 +29,12 @@ export const productApi = {
     const idsWithCommas = ids.join(",");
     const url = `/products?searchCriteria[filter_groups][0][filters][0][field]=entity_id&searchCriteria[filter_groups][0][filters][0][value]=${idsWithCommas}&searchCriteria[filter_groups][0][filters][0][condition_type]=in`;
     return axiosApi.get<ProductList>(url).then((response) => response.data);
+  },
+
+  async getStockBySku(sku: string): Promise<StockItem> {
+    return axiosApi
+      .get<StockItem>(`/stockItems/${sku}`)
+      .then((response) => response.data);
   },
 
   async createProduct(product: Omit<Product, "id">): Promise<Product> {

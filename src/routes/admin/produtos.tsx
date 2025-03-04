@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,7 +32,7 @@ export default function Products() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const pageSize = 100;
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [productsWithStock, setProductsWithStock] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(
     undefined
   );
@@ -46,9 +46,33 @@ export default function Products() {
     queryFn: () => api.getProducts(pageSize, currentPage),
   });
 
-  console.log(products);
+  const fetchStock = useCallback(() => {
+    const getStock = async () => {
+      const updatedProducts = await Promise.all(
+        products?.items.map(async (product) => {
+          const response = await api.getStockBySku(product.sku);
+          return {
+            ...product,
+            extension_attributes: {
+              ...product.extension_attributes,
+              stock_item: response,
+            },
+          };
+        }) ?? []
+      );
+      setProductsWithStock(updatedProducts);
+    };
 
-  const filteredProducts = products?.items.filter((product) =>
+    getStock().catch((error) => {
+      console.error("Error fetching stock:", error);
+    });
+  }, [products?.items]);
+
+  useEffect(() => {
+    fetchStock();
+  }, [fetchStock]);
+
+  const filteredProducts = productsWithStock.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -140,11 +164,18 @@ export default function Products() {
                   </div>
                   <div className="flex justify-between">
                     <span className="font-medium">Estoque:</span>
-                    <span>{product.stock} unidades</span>
+                    <span>
+                      {product.extension_attributes.stock_item?.qty} unidades
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="font-medium">Categoria:</span>
-                    <span>{product.category}</span>
+                    <span>
+                      {
+                        product.extension_attributes.category_links[1]
+                          .category_id
+                      }
+                    </span>
                   </div>
                   <div className="flex justify-end space-x-2">
                     <Button

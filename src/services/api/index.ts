@@ -19,6 +19,7 @@ export const api = {
   createProduct: productApi.createProduct,
   updateProduct: productApi.updateProduct,
   deleteProduct: productApi.deleteProduct,
+  getStockBySku: productApi.getStockBySku,
 
   // User API methods
   getUsers: userApi.getUsers,
