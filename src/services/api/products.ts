@@ -6,10 +6,13 @@ import { axiosApi } from "../api";
 const mockProducts: Product[] = [];
 
 export const productApi = {
-  async getProducts(): Promise<ProductList> {
+  async getProducts(
+    pageSize: number,
+    currentPage: number
+  ): Promise<ProductList> {
     return axiosApi
       .get<ProductList>(
-        `/products?searchCriteria[filter_groups][0][filters][0][field]=sku&searchCriteria[filter_groups][0][filters][0][value]=&searchCriteria[filter_groups][0][filters][0][condition_type]=neq`
+        `/products?searchCriteria[filter_groups][0][filters][0][field]=sku&searchCriteria[filter_groups][0][filters][0][value]=&searchCriteria[filter_groups][0][filters][0][condition_type]=neq&searchCriteria[pageSize]=${pageSize}&searchCriteria[currentPage]=${currentPage}`
       )
       .then((response) => response.data);
   },

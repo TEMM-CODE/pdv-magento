@@ -10,6 +10,15 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/services/api";
 import { ProductDialog } from "@/components/products/ProductDialog";
 import { Product } from "@/types";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -21,6 +30,9 @@ export default function Products() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const pageSize = 100;
+  const [currentPage, setCurrentPage] = useState(1);
+
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(
     undefined
   );
@@ -30,9 +42,11 @@ export default function Products() {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["products"],
-    queryFn: api.getProducts,
+    queryKey: ["products", currentPage, pageSize],
+    queryFn: () => api.getProducts(pageSize, currentPage),
   });
+
+  console.log(products);
 
   const filteredProducts = products?.items.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -160,6 +174,26 @@ export default function Products() {
           product={selectedProduct}
         />
       </div>
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem
+            onClick={() => setCurrentPage((prevValue) => prevValue - 1)}
+          >
+            <PaginationPrevious />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink isActive>{currentPage}</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
+          <PaginationItem
+            onClick={() => setCurrentPage((prevValue) => prevValue + 1)}
+          >
+            <PaginationNext />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </Layout>
   );
 }
