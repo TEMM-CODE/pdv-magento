@@ -174,7 +174,7 @@ export interface Region {
   name: string;
 }
 
-export interface ZipcodeInfo {
+export interface postcodeInfo {
   logradouro: string;
   bairro: string;
   cep: string;

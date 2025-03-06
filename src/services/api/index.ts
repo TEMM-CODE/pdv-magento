@@ -34,6 +34,7 @@ export const api = {
 
   //Utility API methods
   getRegions: utilsApi.getRegions,
+  consultPostcode: utilsApi.consultPostcode,
 } as const;
 
 export default api;

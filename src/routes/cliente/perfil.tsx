@@ -5,12 +5,13 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { api } from "@/services/api";
 import { Controller, useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { User } from "@/types";
 
 export const Route = createFileRoute("/cliente/perfil")({
   component: Profile,
@@ -30,7 +31,8 @@ const userFormSchema = z.object({
     .string()
     .regex(/[0-9]+$/, "Somente números são permitidos")
     .min(11, "Telefone inválido")
-    .max(11, "Telefone inválido"),
+    .max(11, "Telefone inválido")
+    .optional(),
   postcode: z
     .string()
     .regex(/[0-9]+$/, "Somente números são permitidos")
@@ -47,11 +49,19 @@ const userFormSchema = z.object({
 export default function Profile() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [postcode, setPostcode] = useState("");
 
   const { data: user } = useQuery({
     queryKey: ["user"],
     queryFn: () => api.getUser(),
   });
+
+  const { data: postcodeInfo } = useQuery({
+    queryKey: ["postcodeInfo", postcode],
+    queryFn: () => api.consultPostcode(postcode),
+  });
+
+  console.log("postcodeInfo:", postcodeInfo);
 
   const {
     control,
@@ -63,12 +73,16 @@ export default function Profile() {
       firstName: user?.firstname || "",
       lastName: user?.lastname || "",
       email: user?.email || "",
-      phone: user?.phone || "",
+      phone: user?.addresses?.[0]?.telephone || "",
       taxvat: user?.taxvat || "",
       postcode: user?.addresses?.[0]?.postcode || "",
       addresses: user?.addresses?.[0]?.street || [""],
     },
     resolver: zodResolver(userFormSchema),
+  });
+
+  const updateUserMutation = useMutation({
+    mutationFn: (user: Partial<User>) => api.updateUser(user),
   });
 
   // Atualiza o formulário quando `user` mudar
@@ -78,22 +92,43 @@ export default function Profile() {
         firstName: user.firstname || "",
         lastName: user.lastname || "",
         email: user.email || "",
-        phone: user.phone || "",
+        phone: user.addresses?.[0]?.telephone || "",
         taxvat: user.taxvat || "",
         postcode: user.addresses?.[0]?.postcode || "",
         addresses: user.addresses?.[0]?.street
           ? user.addresses[0].street
           : [""],
       });
+      setPostcode(user.addresses?.[0]?.postcode || "");
     }
   }, [user, reset]); // Dispara sempre que `user` mudar
 
   const onSubmit = async (data: z.infer<typeof userFormSchema>) => {
     setIsLoading(true);
-    console.log(data);
+
+    const formattedUser = {
+      ...user,
+      firstname: data.firstName,
+      lastname: data.lastName,
+      email: data.email,
+      taxvat: data.taxvat,
+      addresses: [
+        {
+          ...user?.addresses?.[0],
+          street: data.addresses || [""],
+          postcode: data.postcode || "",
+          telephone: data.phone,
+          firstname: data.firstName,
+          lastname: data.lastName,
+          city: postcodeInfo?.cidade,
+          country_id: "BR",
+          regionId: postcodeInfo?.uf,
+        },
+      ],
+    };
+
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      updateUserMutation.mutate(formattedUser);
 
       toast({
         title: "Perfil atualizado",
@@ -205,7 +240,14 @@ export default function Profile() {
                 render={({ field }) => (
                   <div className="space-y-2">
                     <Label htmlFor="postcode">CEP</Label>
-                    <Input id="postcode" {...field} />
+                    <Input
+                      id="postcode"
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e.target.value);
+                        setPostcode(e.target.value);
+                      }}
+                    />
                     {errors.postcode && (
                       <small className="text-xs font-medium leading-none text-red-700">
                         {errors.postcode.message}

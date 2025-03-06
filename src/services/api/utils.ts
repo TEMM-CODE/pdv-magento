@@ -1,4 +1,4 @@
-import { RegionList, ZipcodeInfo } from "@/types";
+import { RegionList, postcodeInfo } from "@/types";
 import { axiosApi } from "../api";
 
 export const utilsApi = {
@@ -8,9 +8,9 @@ export const utilsApi = {
       .then((response) => response.data);
   },
 
-  async consultZipcode(zipCode: string): Promise<ZipcodeInfo> {
+  async consultPostcode(postcode: string): Promise<postcodeInfo> {
     return axiosApi
-      .get<ZipcodeInfo>(`/consultaCep/${zipCode}`)
+      .get<postcodeInfo>(`/consultaCep/${postcode}`)
       .then((response) => response.data);
   },
 };
