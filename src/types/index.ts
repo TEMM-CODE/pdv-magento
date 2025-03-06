@@ -173,3 +173,12 @@ export interface Region {
   code: string;
   name: string;
 }
+
+export interface ZipcodeInfo {
+  logradouro: string;
+  bairro: string;
+  cep: string;
+  cidade: string;
+  uf: string;
+  error: unknown;
+}
