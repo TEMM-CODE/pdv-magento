@@ -2,6 +2,7 @@ import { productApi } from "./products";
 import { userApi } from "./users";
 import { salesApi } from "./sales";
 import { supervisorApi } from "./supervisor";
+import { utilsApi } from "./utils";
 
 export const api = {
   // Supervisor API methods
@@ -30,6 +31,9 @@ export const api = {
 
   // Sales API methods
   getSales: salesApi.getSales,
+
+  //Utility API methods
+  getRegions: utilsApi.getRegions,
 } as const;
 
 export default api;

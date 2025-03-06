@@ -4,32 +4,31 @@ export interface User {
   lastname: string;
   email: string;
   role: UserRole;
-  phone: string;
   taxvat: string;
   addresses?: Array<{
-    region: {
+    region?: {
       region_code: string;
       region: string;
       region_id: number;
       extension_attributes: object;
     };
-    region_id: number;
-    country_id: string;
-    street: Array<string>;
-    company: string;
-    telephone: string;
-    fax: string;
-    postcode: string;
-    city: string;
-    firstname: string;
-    lastname: string;
-    middlename: string;
-    prefix: string;
-    suffix: string;
-    vat_id: string;
-    default_shipping: boolean;
-    default_billing: boolean;
-    extension_attributes: object;
+    region_id?: number;
+    country_id?: string;
+    street?: Array<string>;
+    company?: string;
+    telephone?: string;
+    fax?: string;
+    postcode?: string;
+    city?: string;
+    firstname?: string;
+    lastname?: string;
+    middlename?: string;
+    prefix?: string;
+    suffix?: string;
+    vat_id?: string;
+    default_shipping?: boolean;
+    default_billing?: boolean;
+    extension_attributes?: object;
   }>;
 }
 
@@ -158,4 +157,19 @@ export interface StockItem {
   product_id: number;
   stock_id: number;
   extension_attributes: Record<string, unknown>;
+}
+
+export interface RegionList {
+  id: string;
+  two_letter_abbreviation: string;
+  three_letter_abbreviation: string;
+  full_name_locale: string;
+  full_name_english: string;
+  available_regions: Region[];
+}
+
+export interface Region {
+  id: string;
+  code: string;
+  name: string;
 }
