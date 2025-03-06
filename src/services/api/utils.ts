@@ -7,4 +7,10 @@ export const utilsApi = {
       .get<RegionList>("/directory/countries")
       .then((response) => response.data);
   },
+
+  async consultZipcode(zipCode: string): Promise<string> {
+    return axiosApi
+      .get<string>(`/consultaCep/${zipCode}`)
+      .then((response) => response.data);
+  },
 };
