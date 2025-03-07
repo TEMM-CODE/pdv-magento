@@ -8,9 +8,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
 export function Header() {
   const navigate = useNavigate();
+  const { role } = useAuth();
   const { toast } = useToast();
 
   const handleNotificationClick = () => {
@@ -38,13 +40,15 @@ export function Header() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
+            {role === "customer" && (
+              <DropdownMenuItem
+                onClick={() => navigate({ to: `/${role}/perfil` })}
+              >
+                Meu Perfil
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem
-              onClick={() => navigate({ to: "/cliente/perfil" })}
-            >
-              Meu Perfil
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => navigate({ to: "/admin/configuracoes" })}
+              onClick={() => navigate({ to: `/${role}/configuracoes` })}
             >
               Configurações
             </DropdownMenuItem>
