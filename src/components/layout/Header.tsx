@@ -28,11 +28,13 @@ export function Header() {
         <Button variant="ghost" size="icon" onClick={handleNotificationClick}>
           <Bell className="h-5 w-5" />
         </Button>
-        <Button variant="ghost" size="icon" asChild>
-          <Link to="/cliente/carrinho">
-            <ShoppingCart className="h-5 w-5" />
-          </Link>
-        </Button>
+        {role === "customer" && (
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/cliente/carrinho">
+              <ShoppingCart className="h-5 w-5" />
+            </Link>
+          </Button>
+        )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
