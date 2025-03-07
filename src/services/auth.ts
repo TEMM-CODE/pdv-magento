@@ -5,7 +5,7 @@ export const authService = {
   async login(
     credentials: LoginCredentials
   ): Promise<{ token: string; role: string }> {
-    const roles = ["customer", "admin"];
+    const roles = ["cliente", "admin"];
 
     for (const role of roles) {
       try {
