@@ -8,9 +8,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
 export function Header() {
   const navigate = useNavigate();
+  const { role } = useAuth();
   const { toast } = useToast();
 
   const handleNotificationClick = () => {
@@ -26,11 +28,13 @@ export function Header() {
         <Button variant="ghost" size="icon" onClick={handleNotificationClick}>
           <Bell className="h-5 w-5" />
         </Button>
-        <Button variant="ghost" size="icon" asChild>
-          <Link to="/cliente/carrinho">
-            <ShoppingCart className="h-5 w-5" />
-          </Link>
-        </Button>
+        {role === "customer" && (
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/cliente/carrinho">
+              <ShoppingCart className="h-5 w-5" />
+            </Link>
+          </Button>
+        )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
@@ -38,17 +42,27 @@ export function Header() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
+            {role === "customer" && (
+              <DropdownMenuItem
+                onClick={() => navigate({ to: `/${role}/perfil` })}
+              >
+                Meu Perfil
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem
-              onClick={() => navigate({ to: "/cliente/perfil" })}
-            >
-              Meu Perfil
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => navigate({ to: "/admin/configuracoes" })}
+              onClick={() => navigate({ to: `/${role}/configuracoes` })}
             >
               Configurações
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-red-600">Sair</DropdownMenuItem>
+            <DropdownMenuItem
+              className="text-red-600"
+              onClick={() => {
+                localStorage.removeItem("token");
+                navigate({ to: "/login" });
+              }}
+            >
+              Sair
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

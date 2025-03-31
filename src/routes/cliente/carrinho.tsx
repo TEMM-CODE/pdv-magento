@@ -15,49 +15,20 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCart } from "@/hooks/use-cart";
 import { useQuery } from "@tanstack/react-query";
 import { productApi } from "@/services/api/products";
-import { useCallback } from "react";
 
 export const Route = createFileRoute("/cliente/carrinho")({
   component: Cart,
 });
 
-// Mock do carrinho - será substituído pela integração real
-const cartItems = [
-  {
-    id: 1,
-    productId: 1,
-    productName: "Coca-Cola 350ml",
-    quantity: 2,
-    price: 5.0,
-    subtotal: 10.0,
-    product: {
-      id: 1,
-      name: "Coca-Cola 350ml",
-      description: "Refrigerante Coca-Cola Lata 350ml",
-      price: 5.0,
-      stock: 100,
-      category: "Bebidas",
-    },
-  },
-];
-
 export default function Cart() {
-  const { addToCart, cart, removeFromCart } = useCart();
+  const { cart, total, removeFromCart, increaseQuantity, decreaseQuantity } =
+    useCart();
   const navigate = useNavigate();
-  const total = cartItems.reduce((acc, item) => acc + item.subtotal, 0);
 
   const { data: products } = useQuery({
     queryKey: ["products", cart],
-    queryFn: () => productApi.getProductsByIds(cart),
+    queryFn: () => productApi.getProductsByIds(cart.map((item) => item.id)),
   });
-
-  const updateQuantity = (itemId: number, newQuantity: number) => {
-    // TODO: Implement quantity update
-  };
-
-  const removeItem = (itemId: number) => {
-    // TODO: Implement remove item
-  };
 
   return (
     <Layout role="customer">
@@ -89,18 +60,15 @@ export default function Cart() {
                         <Button
                           variant="outline"
                           size="icon"
-                          onClick={() =>
-                            updateQuantity(product.id, product.quantity - 1)
-                          }
-                          disabled={product.quantity <= 1}
+                          onClick={() => decreaseQuantity(product.id)}
                         >
                           <Minus className="h-4 w-4" />
                         </Button>
                         <Input
                           type="number"
-                          value={product.quantity}
-                          onChange={(e) =>
-                            updateQuantity(product.id, parseInt(e.target.value))
+                          value={
+                            cart.find((item) => item.id === product.id)
+                              ?.quantity
                           }
                           className="w-20 text-center"
                           min="1"
@@ -108,9 +76,7 @@ export default function Cart() {
                         <Button
                           variant="outline"
                           size="icon"
-                          onClick={() =>
-                            updateQuantity(product.id, product.quantity + 1)
-                          }
+                          onClick={() => increaseQuantity(product.id)}
                         >
                           <Plus className="h-4 w-4" />
                         </Button>

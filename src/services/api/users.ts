@@ -1,5 +1,4 @@
 import { User } from "@/types";
-import { delay } from "./utils";
 import { axiosApi } from "../api";
 
 // Mock users data
@@ -7,7 +6,6 @@ const mockUsers: User[] = [];
 
 export const userApi = {
   async getUsers(): Promise<User[]> {
-    await delay(500);
     return mockUsers;
   },
 
@@ -37,16 +35,13 @@ export const userApi = {
   },
 
   async updateUser(user: Partial<User>): Promise<User> {
-    const newUser = {
-      customer: { ...user },
-    };
+    const updatedUser = { customer: { ...user } };
     return axiosApi
-      .put(`/customers/me`, newUser)
+      .put<User>(`/customers/me`, updatedUser)
       .then((response) => response.data);
   },
 
   async deleteUser(id: number): Promise<void> {
-    await delay(500);
     const index = mockUsers.findIndex((u) => u.id === id);
     if (index === -1) throw new Error("Usuário não encontrado");
     mockUsers.splice(index, 1);

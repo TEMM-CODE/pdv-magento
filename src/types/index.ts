@@ -4,32 +4,31 @@ export interface User {
   lastname: string;
   email: string;
   role: UserRole;
-  phone: string;
   taxvat: string;
   addresses?: Array<{
-    region: {
+    region?: {
       region_code: string;
       region: string;
       region_id: number;
       extension_attributes: object;
     };
-    region_id: number;
-    country_id: string;
-    street: Array<string>;
-    company: string;
-    telephone: string;
-    fax: string;
-    postcode: string;
-    city: string;
-    firstname: string;
-    lastname: string;
-    middlename: string;
-    prefix: string;
-    suffix: string;
-    vat_id: string;
-    default_shipping: boolean;
-    default_billing: boolean;
-    extension_attributes: object;
+    region_id?: number;
+    country_id?: string;
+    street?: Array<string>;
+    company?: string;
+    telephone?: string;
+    fax?: string;
+    postcode?: string;
+    city?: string;
+    firstname?: string;
+    lastname?: string;
+    middlename?: string;
+    prefix?: string;
+    suffix?: string;
+    vat_id?: string;
+    default_shipping?: boolean;
+    default_billing?: boolean;
+    extension_attributes?: object;
   }>;
 }
 
@@ -65,6 +64,7 @@ export interface Product {
       position: number;
       category_id: string;
     }>;
+    stock_item?: StockItem;
     configurable_product_options: Array<{
       id: number;
       attribute_id: string;
@@ -127,4 +127,58 @@ export interface SupervisorOperation {
   requestedBy: number;
   timestamp: string;
   registerId: number;
+}
+
+export interface StockItem {
+  qty: number;
+  is_in_stock: boolean;
+  is_qty_decimal: boolean;
+  show_default_notification_message: boolean;
+  use_config_min_qty: boolean;
+  min_qty: number;
+  use_config_min_sale_qty: number;
+  min_sale_qty: number;
+  use_config_max_sale_qty: boolean;
+  max_sale_qty: number;
+  use_config_backorders: boolean;
+  backorders: number;
+  use_config_notify_stock_qty: boolean;
+  notify_stock_qty: number;
+  use_config_qty_increments: boolean;
+  qty_increments: number;
+  use_config_enable_qty_inc: boolean;
+  enable_qty_increments: boolean;
+  use_config_manage_stock: boolean;
+  manage_stock: boolean;
+  low_stock_date: string;
+  is_decimal_divided: boolean;
+  stock_status_changed_auto: number;
+  item_id: number;
+  product_id: number;
+  stock_id: number;
+  extension_attributes: Record<string, unknown>;
+}
+
+export interface RegionList {
+  id: string;
+  two_letter_abbreviation: string;
+  three_letter_abbreviation: string;
+  full_name_locale: string;
+  full_name_english: string;
+  available_regions: Region[];
+}
+
+export interface Region {
+  id: string;
+  code: string;
+  name: string;
+}
+
+export interface postcodeInfo {
+  logradouro: string;
+  bairro: string;
+  cep: string;
+  cidade: string;
+  uf: string;
+  error: unknown;
 }

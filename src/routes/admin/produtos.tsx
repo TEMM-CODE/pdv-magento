@@ -1,71 +1,107 @@
-import { useState } from 'react'
-import { Layout } from '@/components/layout/Layout'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { useToast } from '@/hooks/use-toast'
-import { Plus, Edit, Trash } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
-import { api } from '@/services/api'
-import { ProductDialog } from '@/components/products/ProductDialog'
-import { Product } from '@/types'
+import { useCallback, useEffect, useState } from "react";
+import { Layout } from "@/components/layout/Layout";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { Plus, Edit, Trash } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/services/api";
+import { ProductDialog } from "@/components/products/ProductDialog";
+import { Product } from "@/types";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/admin/produtos')({
+export const Route = createFileRoute("/admin/produtos")({
   component: Products,
-})
+});
 
 export default function Products() {
-  const { toast } = useToast()
-  const [searchTerm, setSearchTerm] = useState('')
-  const [dialogOpen, setDialogOpen] = useState(false)
+  const { toast } = useToast();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const pageSize = 100;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [productsWithStock, setProductsWithStock] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(
-    undefined,
-  )
+    undefined
+  );
 
   const {
     data: products,
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ['products'],
-    queryFn: api.getProducts,
-  })
+    queryKey: ["products", currentPage, pageSize],
+    queryFn: () => api.getProducts(pageSize, currentPage),
+  });
 
-  const filteredProducts = products?.filter(
-    (product) =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+  const fetchStock = useCallback(() => {
+    const getStock = async () => {
+      const updatedProducts = await Promise.all(
+        products?.items.map(async (product) => {
+          const response = await api.getStockBySku(product.sku);
+          return {
+            ...product,
+            extension_attributes: {
+              ...product.extension_attributes,
+              stock_item: response,
+            },
+          };
+        }) ?? []
+      );
+      setProductsWithStock(updatedProducts);
+    };
+
+    getStock().catch((error) => {
+      console.error("Error fetching stock:", error);
+    });
+  }, [products?.items]);
+
+  useEffect(() => {
+    fetchStock();
+  }, [fetchStock]);
+
+  const filteredProducts = productsWithStock.filter((product) =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleDelete = async (productId: number) => {
     try {
-      await api.deleteProduct(productId)
+      await api.deleteProduct(productId);
       toast({
-        title: 'Produto excluído',
-        description: 'O produto foi excluído com sucesso.',
-      })
-      refetch()
+        title: "Produto excluído",
+        description: "O produto foi excluído com sucesso.",
+      });
+      refetch();
     } catch (error) {
       toast({
-        title: 'Erro',
-        description: 'Não foi possível excluir o produto.',
-        variant: 'destructive',
-      })
+        title: "Erro",
+        description: "Não foi possível excluir o produto.",
+        variant: "destructive",
+      });
     }
-  }
+  };
 
   const handleEdit = (product: Product) => {
-    setSelectedProduct(product)
-    setDialogOpen(true)
-  }
+    setSelectedProduct(product);
+    setDialogOpen(true);
+  };
 
   const handleNewProduct = () => {
-    setSelectedProduct(undefined)
-    setDialogOpen(true)
-  }
+    setSelectedProduct(undefined);
+    setDialogOpen(true);
+  };
 
   if (isLoading) {
     return (
@@ -74,7 +110,7 @@ export default function Products() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
       </Layout>
-    )
+    );
   }
 
   return (
@@ -95,7 +131,7 @@ export default function Products() {
           <CardContent>
             <div className="flex gap-4">
               <div className="flex-1">
-                <Label htmlFor="search">Buscar por nome ou descrição</Label>
+                <Label htmlFor="search">Buscar por nome</Label>
                 <Input
                   id="search"
                   value={searchTerm}
@@ -115,7 +151,11 @@ export default function Products() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                  {product.description}
+                  {
+                    product.custom_attributes.find(
+                      (attr) => attr.attribute_code === "description"
+                    )?.value
+                  }
                 </p>
                 <div className="space-y-2">
                   <div className="flex justify-between">
@@ -124,11 +164,18 @@ export default function Products() {
                   </div>
                   <div className="flex justify-between">
                     <span className="font-medium">Estoque:</span>
-                    <span>{product.stock} unidades</span>
+                    <span>
+                      {product.extension_attributes.stock_item?.qty} unidades
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="font-medium">Categoria:</span>
-                    <span>{product.category}</span>
+                    <span>
+                      {
+                        product.extension_attributes.category_links[1]
+                          .category_id
+                      }
+                    </span>
                   </div>
                   <div className="flex justify-end space-x-2">
                     <Button
@@ -158,6 +205,26 @@ export default function Products() {
           product={selectedProduct}
         />
       </div>
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem
+            onClick={() => setCurrentPage((prevValue) => prevValue - 1)}
+          >
+            <PaginationPrevious />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink isActive>{currentPage}</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
+          <PaginationItem
+            onClick={() => setCurrentPage((prevValue) => prevValue + 1)}
+          >
+            <PaginationNext />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </Layout>
-  )
+  );
 }

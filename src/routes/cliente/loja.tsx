@@ -96,7 +96,7 @@ export default function Store() {
                 </p>
               </CardContent>
               <CardFooter>
-                {cart.find((id) => id === product.id) ? (
+                {cart.find((item) => item.id === product.id) ? (
                   <Button
                     className="w-full"
                     onClick={() => {
@@ -114,7 +114,7 @@ export default function Store() {
                   <Button
                     className="w-full"
                     onClick={() => {
-                      addToCart(product.id);
+                      addToCart(product.id, product.price);
                       toast({
                         title: "Produto adicionado ao carrinho",
                         description:

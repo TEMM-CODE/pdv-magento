@@ -2,6 +2,7 @@ import { createContext, useContext } from "react";
 
 type AuthContextType = {
   token: string;
+  role: string;
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(

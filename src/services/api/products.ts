@@ -1,15 +1,17 @@
-import { Product, ProductList } from "@/types";
-import { delay } from "./utils";
+import { Product, ProductList, StockItem } from "@/types";
 import { axiosApi } from "../api";
 
 // Mock products data
 const mockProducts: Product[] = [];
 
 export const productApi = {
-  async getProducts(): Promise<ProductList> {
+  async getProducts(
+    pageSize: number,
+    currentPage: number
+  ): Promise<ProductList> {
     return axiosApi
       .get<ProductList>(
-        `/products?searchCriteria[filter_groups][0][filters][0][field]=sku&searchCriteria[filter_groups][0][filters][0][value]=&searchCriteria[filter_groups][0][filters][0][condition_type]=neq`
+        `/products?searchCriteria[filter_groups][0][filters][0][field]=sku&searchCriteria[filter_groups][0][filters][0][value]=&searchCriteria[filter_groups][0][filters][0][condition_type]=neq&searchCriteria[pageSize]=${pageSize}&searchCriteria[currentPage]=${currentPage}`
       )
       .then((response) => response.data);
   },
@@ -28,8 +30,13 @@ export const productApi = {
     return axiosApi.get<ProductList>(url).then((response) => response.data);
   },
 
+  async getStockBySku(sku: string): Promise<StockItem> {
+    return axiosApi
+      .get<StockItem>(`/stockItems/${sku}`)
+      .then((response) => response.data);
+  },
+
   async createProduct(product: Omit<Product, "id">): Promise<Product> {
-    await delay(500);
     const newProduct = {
       id: mockProducts.length + 1,
       ...product,
@@ -39,7 +46,6 @@ export const productApi = {
   },
 
   async updateProduct(id: number, product: Partial<Product>): Promise<Product> {
-    await delay(500);
     const index = mockProducts.findIndex((p) => p.id === id);
     if (index === -1) throw new Error("Produto não encontrado");
     mockProducts[index] = { ...mockProducts[index], ...product };
@@ -47,7 +53,6 @@ export const productApi = {
   },
 
   async deleteProduct(id: number): Promise<void> {
-    await delay(500);
     const index = mockProducts.findIndex((p) => p.id === id);
     if (index === -1) throw new Error("Produto não encontrado");
     mockProducts.splice(index, 1);
