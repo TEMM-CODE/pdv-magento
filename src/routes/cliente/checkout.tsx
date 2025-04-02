@@ -1,83 +1,155 @@
-import { Layout } from '@/components/layout/Layout'
-import { Button } from '@/components/ui/button'
+import { Layout } from "@/components/layout/Layout";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { useToast } from '@/hooks/use-toast'
-import { useNavigate } from '@tanstack/react-router'
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "@tanstack/react-router";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { useState } from 'react'
+} from "@/components/ui/dialog";
+import { useState } from "react";
+import { useCart } from "@/hooks/use-cart";
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/cliente/checkout')({
+export const Route = createFileRoute("/cliente/checkout")({
   component: Checkout,
-})
+});
 
 export default function Checkout() {
-  const navigate = useNavigate()
-  const { toast } = useToast()
-  const [deliveryMethod, setDeliveryMethod] = useState('')
-  const [paymentMethod, setPaymentMethod] = useState('')
-  const [showAddressDialog, setShowAddressDialog] = useState(false)
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { total, clearCart } = useCart();
+  const [deliveryMethod, setDeliveryMethod] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [showAddressDialog, setShowAddressDialog] = useState(false);
+  const [address, setAddress] = useState({
+    cep: "",
+    street: "",
+    number: "",
+    complement: "",
+    neighborhood: "",
+    city: "",
+    state: "",
+  });
 
   const handleDeliveryMethodChange = (value: string) => {
-    setDeliveryMethod(value)
-    if (value === 'delivery') {
-      setShowAddressDialog(true)
+    setDeliveryMethod(value);
+    if (value === "delivery") {
+      setShowAddressDialog(true);
     }
-  }
+  };
+
+  const handleAddressChange = (field: string, value: string) => {
+    setAddress((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleConfirmAddress = () => {
+    const requiredFields = [
+      "cep",
+      "street",
+      "number",
+      "neighborhood",
+      "city",
+      "state",
+    ];
+    const missingFields = requiredFields.filter(
+      (field) => !address[field as keyof typeof address],
+    );
+
+    if (missingFields.length > 0) {
+      toast({
+        title: "Campos obrigatórios",
+        description:
+          "Por favor, preencha todos os campos obrigatórios do endereço",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setShowAddressDialog(false);
+    toast({
+      title: "Endereço salvo",
+      description: "Endereço de entrega confirmado com sucesso",
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (!deliveryMethod) {
       toast({
-        title: 'Selecione o método de entrega',
+        title: "Selecione o método de entrega",
         description:
-          'É necessário selecionar um método de entrega para continuar',
-        variant: 'destructive',
-      })
-      return
+          "É necessário selecionar um método de entrega para continuar",
+        variant: "destructive",
+      });
+      return;
     }
+
+    if (deliveryMethod === "delivery") {
+      const requiredFields = [
+        "cep",
+        "street",
+        "number",
+        "neighborhood",
+        "city",
+        "state",
+      ];
+      const missingFields = requiredFields.filter(
+        (field) => !address[field as keyof typeof address],
+      );
+
+      if (missingFields.length > 0) {
+        toast({
+          title: "Endereço incompleto",
+          description:
+            "Por favor, preencha todos os campos obrigatórios do endereço",
+          variant: "destructive",
+        });
+        setShowAddressDialog(true);
+        return;
+      }
+    }
+
     if (!paymentMethod) {
       toast({
-        title: 'Selecione o método de pagamento',
+        title: "Selecione o método de pagamento",
         description:
-          'É necessário selecionar um método de pagamento para continuar',
-        variant: 'destructive',
-      })
-      return
+          "É necessário selecionar um método de pagamento para continuar",
+        variant: "destructive",
+      });
+      return;
     }
 
     // TODO: Implement payment gateway integration
+    clearCart();
     toast({
-      title: 'Pedido realizado com sucesso!',
-      description: 'Você receberá um e-mail com os detalhes do pedido.',
-    })
+      title: "Pedido realizado com sucesso!",
+      description: "Você receberá um e-mail com os detalhes do pedido.",
+    });
     navigate({ to: "/cliente" });
-  }
+  };
 
   return (
     <Layout role="customer">
-      <div className="space-y-6 max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold">Checkout</h1>
+      <div className="space-y-6 max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold font-heading">Checkout</h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Método de Entrega</CardTitle>
+              <CardTitle className="text-2xl">Método de Entrega</CardTitle>
             </CardHeader>
             <CardContent>
               <RadioGroup
@@ -98,7 +170,7 @@ export default function Checkout() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Forma de Pagamento</CardTitle>
+              <CardTitle className="text-2xl">Forma de Pagamento</CardTitle>
             </CardHeader>
             <CardContent>
               <RadioGroup
@@ -124,15 +196,15 @@ export default function Checkout() {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between text-lg font-bold">
-                <span>Total</span>
-                <span>R$ 10,00</span>
+                <span className="text-xl">Total</span>
+                <span className="text-2xl">R$ {total.toFixed(2)}</span>
               </div>
             </CardContent>
             <CardFooter className="flex justify-between">
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => navigate({ to: "/cliente/carrinho"})}
+                onClick={() => navigate({ to: "/cliente/carrinho" })}
               >
                 Voltar ao Carrinho
               </Button>
@@ -149,41 +221,81 @@ export default function Checkout() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="cep">CEP</Label>
-                <Input id="cep" required />
+                <Input
+                  id="cep"
+                  required
+                  value={address.cep}
+                  onChange={(e) => handleAddressChange("cep", e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="street">Rua</Label>
-                <Input id="street" required />
+                <Input
+                  id="street"
+                  required
+                  value={address.street}
+                  onChange={(e) =>
+                    handleAddressChange("street", e.target.value)
+                  }
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="number">Número</Label>
-                <Input id="number" required />
+                <Input
+                  id="number"
+                  required
+                  value={address.number}
+                  onChange={(e) =>
+                    handleAddressChange("number", e.target.value)
+                  }
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="complement">Complemento</Label>
-                <Input id="complement" />
+                <Input
+                  id="complement"
+                  value={address.complement}
+                  onChange={(e) =>
+                    handleAddressChange("complement", e.target.value)
+                  }
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="neighborhood">Bairro</Label>
-                <Input id="neighborhood" required />
+                <Input
+                  id="neighborhood"
+                  required
+                  value={address.neighborhood}
+                  onChange={(e) =>
+                    handleAddressChange("neighborhood", e.target.value)
+                  }
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="city">Cidade</Label>
-                <Input id="city" required />
+                <Input
+                  id="city"
+                  required
+                  value={address.city}
+                  onChange={(e) => handleAddressChange("city", e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="state">Estado</Label>
-                <Input id="state" required />
+                <Input
+                  id="state"
+                  required
+                  value={address.state}
+                  onChange={(e) => handleAddressChange("state", e.target.value)}
+                />
               </div>
             </div>
             <div className="flex justify-end pt-4">
-              <Button onClick={() => setShowAddressDialog(false)}>
-                Confirmar Endereço
-              </Button>
+              <Button onClick={handleConfirmAddress}>Confirmar Endereço</Button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
     </Layout>
-  )
+  );
 }

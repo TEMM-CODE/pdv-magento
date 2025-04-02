@@ -9,8 +9,14 @@ interface CartProps {
   total?: number;
 }
 
-export function Cart({ items, onUpdateQuantity, onRemoveItem, total }: CartProps) {
-  const calculatedTotal = total ?? items.reduce((sum, item) => sum + item.subtotal, 0);
+export function Cart({
+  items,
+  onUpdateQuantity,
+  onRemoveItem,
+  total,
+}: CartProps) {
+  const calculatedTotal =
+    total ?? items.reduce((sum, item) => sum + item.subtotal, 0);
 
   return (
     <div className="space-y-4">
@@ -56,7 +62,9 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, total }: CartProps
       </div>
       <div className="flex justify-between items-center p-4 border-t">
         <span className="font-medium">Total:</span>
-        <span className="text-xl font-bold">R$ {calculatedTotal.toFixed(2)}</span>
+        <span className="text-xl font-bold">
+          R$ {calculatedTotal.toFixed(2)}
+        </span>
       </div>
     </div>
   );
