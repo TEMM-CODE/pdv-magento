@@ -1,3 +1,5 @@
+// Página não utlizada, desativar?
+
 import { Layout } from "@/components/layout/Layout";
 import {
   Card,
@@ -32,14 +34,14 @@ export default function CustomerProducts() {
   });
 
   const filteredProducts = products?.items.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    product.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   if (isLoading) {
     return (
       <Layout role="customer">
         <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-4 border-b-primary"></div>
         </div>
       </Layout>
     );
@@ -47,9 +49,8 @@ export default function CustomerProducts() {
 
   return (
     <Layout role="customer">
-      <div className="space-y-6">
-        <h1 className="text-3xl font-bold">Produtos</h1>
-
+      <div className="space-y-4 lg:space-y-6">
+        <h1 className="text-3xl font-bold font-heading">Produtos</h1>
         <Card>
           <CardHeader>
             <CardTitle>Buscar Produtos</CardTitle>
@@ -79,7 +80,7 @@ export default function CustomerProducts() {
                 <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
                   {
                     product.custom_attributes.find(
-                      (attr) => attr.attribute_code === "description"
+                      (attr) => attr.attribute_code === "description",
                     )?.value
                   }
                 </p>
