@@ -18,7 +18,11 @@ interface ProductDialogProps {
   product?: Product;
 }
 
-export function ProductDialog({ open, onOpenChange, product }: ProductDialogProps) {
+export function ProductDialog({
+  open,
+  onOpenChange,
+  product,
+}: ProductDialogProps) {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: product?.name || "",
@@ -48,14 +52,14 @@ export function ProductDialog({ open, onOpenChange, product }: ProductDialogProp
           body: JSON.stringify(formData),
         });
       }
-      
+
       toast({
         title: product ? "Produto atualizado" : "Produto cadastrado",
-        description: product 
+        description: product
           ? "As informações do produto foram atualizadas com sucesso."
           : "O novo produto foi cadastrado com sucesso.",
       });
-      
+
       onOpenChange(false);
     } catch (error) {
       toast({
@@ -79,6 +83,7 @@ export function ProductDialog({ open, onOpenChange, product }: ProductDialogProp
             <Label htmlFor="name">Nome</Label>
             <Input
               id="name"
+              className="text-slate-500"
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
@@ -90,6 +95,7 @@ export function ProductDialog({ open, onOpenChange, product }: ProductDialogProp
             <Label htmlFor="description">Descrição</Label>
             <Input
               id="description"
+              className="text-slate-500"
               value={formData.description}
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
@@ -103,10 +109,14 @@ export function ProductDialog({ open, onOpenChange, product }: ProductDialogProp
               <Input
                 id="price"
                 type="number"
+                className="text-slate-500"
                 step="0.01"
                 value={formData.price}
                 onChange={(e) =>
-                  setFormData({ ...formData, price: parseFloat(e.target.value) })
+                  setFormData({
+                    ...formData,
+                    price: parseFloat(e.target.value),
+                  })
                 }
                 required
               />
@@ -115,6 +125,7 @@ export function ProductDialog({ open, onOpenChange, product }: ProductDialogProp
               <Label htmlFor="stock">Estoque</Label>
               <Input
                 id="stock"
+                className="text-slate-500"
                 type="number"
                 value={formData.stock}
                 onChange={(e) =>
@@ -128,6 +139,7 @@ export function ProductDialog({ open, onOpenChange, product }: ProductDialogProp
             <Label htmlFor="category">Categoria</Label>
             <Input
               id="category"
+              className="text-slate-500"
               value={formData.category}
               onChange={(e) =>
                 setFormData({ ...formData, category: e.target.value })
@@ -141,10 +153,14 @@ export function ProductDialog({ open, onOpenChange, product }: ProductDialogProp
               <Input
                 id="cost"
                 type="number"
+                className="text-slate-500"
                 step="0.01"
                 value={formData.cost}
                 onChange={(e) =>
-                  setFormData({ ...formData, cost: parseFloat(e.target.value) })
+                  setFormData({
+                    ...formData,
+                    cost: parseFloat(e.target.value).toFixed(2),
+                  })
                 }
               />
             </div>
@@ -153,17 +169,19 @@ export function ProductDialog({ open, onOpenChange, product }: ProductDialogProp
               <Input
                 id="minStock"
                 type="number"
+                className="text-slate-500"
                 value={formData.minStock}
                 onChange={(e) =>
-                  setFormData({ ...formData, minStock: parseInt(e.target.value) })
+                  setFormData({
+                    ...formData,
+                    minStock: parseInt(e.target.value),
+                  })
                 }
               />
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">
-              {product ? "Salvar" : "Cadastrar"}
-            </Button>
+            <Button type="submit">{product ? "Salvar" : "Cadastrar"}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
