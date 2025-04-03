@@ -5,10 +5,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/components/ui/use-toast";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
-import { useTheme } from "@/context/ThemeContext";
-
-type Theme = "light" | "dark" | "system";
-type PrimaryColor = "blue" | "purple" | "green" | "orange";
+import { PrimaryColor, Theme, useTheme } from "@/context/ThemeContext";
 
 export function AppearanceSettings() {
   const { toast } = useToast();
@@ -27,6 +24,8 @@ export function AppearanceSettings() {
     // Apply the selected theme and primary color globally
     setTheme(selectedTheme);
     setPrimaryColor(selectedPrimaryColor);
+    localStorage.setItem("theme", selectedTheme);
+    localStorage.setItem("primaryColor", selectedPrimaryColor);
 
     toast({
       title: "Aparência atualizada",
@@ -43,25 +42,25 @@ export function AppearanceSettings() {
             <RadioGroup
               value={selectedTheme}
               onValueChange={(value: Theme) => setSelectedTheme(value)}
-              className="grid grid-cols-3 gap-4 mt-2"
+              className="flex grid-cols-3 gap-4 mt-2"
             >
               <Label
                 htmlFor="light"
-                className="flex flex-col items-center justify-between rounded-md border-2 border-muted p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary"
+                className="flex flex-col items-center justify-between rounded-md border-2 border-muted p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary [&:has([data-state=checked])]:bg-accent"
               >
                 <RadioGroupItem value="light" id="light" className="sr-only" />
                 <span>Claro</span>
               </Label>
               <Label
                 htmlFor="dark"
-                className="flex flex-col items-center justify-between rounded-md border-2 border-muted p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary"
+                className="flex flex-col items-center justify-between rounded-md border-2 border-muted p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary [&:has([data-state=checked])]:bg-accent"
               >
                 <RadioGroupItem value="dark" id="dark" className="sr-only" />
                 <span>Escuro</span>
               </Label>
               <Label
                 htmlFor="system"
-                className="flex flex-col items-center justify-between rounded-md border-2 border-muted p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary"
+                className="flex flex-col items-center justify-between rounded-md border-2 border-muted p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary [&:has([data-state=checked])]:bg-accent"
               >
                 <RadioGroupItem
                   value="system"
@@ -80,33 +79,17 @@ export function AppearanceSettings() {
               onValueChange={(value: PrimaryColor) =>
                 setSelectedPrimaryColor(value)
               }
-              className="grid grid-cols-4 gap-4 mt-2"
+              className="grid grid-cols-2 lg:grid-cols-8 gap-4 mt-2"
             >
               <Label
                 htmlFor="blue"
-                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-blue-500 p-4 hover:bg-blue-600 [&:has([data-state=checked])]:border-primary"
+                className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-blue-500 p-4 hover:bg-blue-600 [&:has([data-state=checked])]:border-primary"
               >
                 <RadioGroupItem value="blue" id="blue" className="sr-only" />
               </Label>
               <Label
-                htmlFor="purple"
-                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-purple-500 p-4 hover:bg-purple-600 [&:has([data-state=checked])]:border-primary"
-              >
-                <RadioGroupItem
-                  value="purple"
-                  id="purple"
-                  className="sr-only"
-                />
-              </Label>
-              <Label
-                htmlFor="green"
-                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-green-500 p-4 hover:bg-green-600 [&:has([data-state=checked])]:border-primary"
-              >
-                <RadioGroupItem value="green" id="green" className="sr-only" />
-              </Label>
-              <Label
                 htmlFor="orange"
-                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-orange-500 p-4 hover:bg-orange-600 [&:has([data-state=checked])]:border-primary"
+                className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-orange-500 p-4 hover:bg-orange-600 [&:has([data-state=checked])]:border-primary"
               >
                 <RadioGroupItem
                   value="orange"
@@ -115,15 +98,6 @@ export function AppearanceSettings() {
                 />
               </Label>
             </RadioGroup>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <Label htmlFor="compact-mode">Modo compacto</Label>
-            <Switch
-              id="compact-mode"
-              checked={isCompact}
-              onCheckedChange={setIsCompact}
-            />
           </div>
         </div>
 

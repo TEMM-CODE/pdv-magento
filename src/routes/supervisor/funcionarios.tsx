@@ -1,4 +1,4 @@
-import { Layout } from '@/components/layout/Layout'
+import { Layout } from "@/components/layout/Layout";
 import {
   Table,
   TableBody,
@@ -6,39 +6,45 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { useQuery } from '@tanstack/react-query'
-import { api } from '@/services/api'
+} from "@/components/ui/table";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/services/api";
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 
-export const Route = createFileRoute('/supervisor/funcionarios')({
+export const Route = createFileRoute("/supervisor/funcionarios")({
   component: SupervisorEmployees,
-})
+});
 
 export default function SupervisorEmployees() {
   const { data: employees, isLoading } = useQuery({
-    queryKey: ['users'],
+    queryKey: ["users"],
     queryFn: api.getUsers,
-  })
+  });
 
-  const cashiers = employees?.filter((emp) => emp.role === 'CASHIER') || []
+  const cashiers = employees?.filter((emp) => emp.role === "CASHIER") || [];
 
   if (isLoading) {
     return (
       <Layout role="supervisor">
         <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-4 border-b-primary"></div>
         </div>
       </Layout>
-    )
+    );
   }
 
   return (
     <Layout role="supervisor">
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold">Funcionários</h1>
+        <h1 className="text-3xl font-bold font-heading">Funcionários</h1>
 
+        <Card>
+          <CardHeader>
+            <CardTitle>Funcionários</CardTitle>
+          </CardHeader>
+        </Card>
         <Table>
           <TableHeader>
             <TableRow>
@@ -51,15 +57,15 @@ export default function SupervisorEmployees() {
           <TableBody>
             {cashiers.map((employee) => (
               <TableRow key={employee.id}>
-                <TableCell>{employee.name}</TableCell>
+                <TableCell>{employee.firstname}</TableCell>
                 <TableCell>{employee.email}</TableCell>
-                <TableCell>{employee.phone}</TableCell>
-                <TableCell>{employee.document}</TableCell>
+                <TableCell>{employee.addresses?.[0]?.telephone}</TableCell>
+                <TableCell>{employee.taxvat}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
     </Layout>
-  )
+  );
 }

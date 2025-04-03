@@ -22,10 +22,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     setTotal(totalPrice);
   }, [cart]);
 
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
-
   const addToCart = (itemId: number, price: number) => {
     const newCart = [...cart, { id: itemId, quantity: 1, price: price }];
     setCart(newCart);
@@ -36,29 +32,33 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     setCart(cart.filter((item) => item.id !== itemId));
     localStorage.setItem(
       "cart",
-      JSON.stringify(cart.filter((item) => item.id !== itemId))
+      JSON.stringify(cart.filter((item) => item.id !== itemId)),
     );
   };
 
   const increaseQuantity = (itemId: number) => {
     setCart(
       cart.map((item) =>
-        item.id === itemId ? { ...item, quantity: item.quantity + 1 } : item
-      )
+        item.id === itemId ? { ...item, quantity: item.quantity + 1 } : item,
+      ),
     );
 
     localStorage.setItem("cart", JSON.stringify(cart));
   };
 
   const decreaseQuantity = (itemId: number) => {
-    setCart(
-      cart.map((item) =>
-        item.id === itemId && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
+    const updatedCart = cart.map((item) =>
+      item.id === itemId && item.quantity > 1
+        ? { ...item, quantity: item.quantity - 1 }
+        : item
     );
-    localStorage.setItem("cart", JSON.stringify(cart));
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  };
+
+  const clearCart = () => {
+    setCart([]);
+    localStorage.setItem("cart", JSON.stringify([]));
   };
 
   return (
@@ -70,6 +70,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         removeFromCart,
         increaseQuantity,
         decreaseQuantity,
+        clearCart,
       }}
     >
       {children}

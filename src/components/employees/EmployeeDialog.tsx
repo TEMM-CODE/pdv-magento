@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,31 +17,56 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { User, UserRole } from "@/types";
+import { X } from "lucide-react";
 
 interface EmployeeDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  employee?: {
-    id: number;
-    name: string;
-    email: string;
-    role: string;
-    phone?: string;
-    userCode?: number;
-    password?: string;
-  };
+  employee?: User;
+  onClose?: () => void;
 }
 
-export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogProps) {
+export function EmployeeDialog({
+  open,
+  onOpenChange,
+  employee,
+  onClose,
+}: EmployeeDialogProps) {
   const { toast } = useToast();
+  const address = employee?.addresses?.[0];
+
   const [formData, setFormData] = useState({
-    name: employee?.name || "",
+    name: employee?.firstname || "",
     email: employee?.email || "",
-    role: employee?.role || "CASHIER",
-    phone: employee?.phone || "",
-    userCode: employee?.userCode || "",
-    password: employee?.password || "",
+    role: employee?.role || "EMPLOYEE",
+    phone: address?.telephone || "",
+    userCode: address?.postcode || "",
+    password: employee?.lastname || "",
   });
+
+  useEffect(() => {
+    if (employee) {
+      const address = employee.addresses?.[0];
+      setFormData({
+        name: employee.firstname || "",
+        email: employee.email || "",
+        role: employee.role || "EMPLOYEE",
+        phone: address?.telephone || "",
+        userCode: address?.postcode || "",
+        password: employee.lastname || "",
+      });
+    } else {
+      setFormData({
+        name: "",
+        email: "",
+        role: "EMPLOYEE",
+        phone: "",
+        userCode: "",
+        password: "",
+      });
+    }
+  }, [employee]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,14 +84,14 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
           body: JSON.stringify(formData),
         });
       }
-      
+
       toast({
         title: employee ? "Funcionário atualizado" : "Funcionário cadastrado",
-        description: employee 
+        description: employee
           ? "As informações do funcionário foram atualizadas com sucesso."
           : "O novo funcionário foi cadastrado com sucesso.",
       });
-      
+
       onOpenChange(false);
     } catch (error) {
       toast({
@@ -77,19 +102,31 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
     }
   };
 
+  const handleClose = () => {
+    onOpenChange(false);
+    onClose?.();
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open}>
       <DialogContent>
-        <DialogHeader>
+        <DialogHeader className="flex-row justify-between items-center">
           <DialogTitle>
             {employee ? "Editar Funcionário" : "Novo Funcionário"}
           </DialogTitle>
+          <div
+            className="flex items-center justify-center cursor-pointer absolute right-4 top-4"
+            onClick={handleClose}
+          >
+            <X className="h-4 w-4" />
+          </div>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Nome</Label>
             <Input
               id="name"
+              className="text-slate-500"
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
@@ -102,6 +139,7 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
             <Input
               id="email"
               type="email"
+              className="text-slate-500"
               value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
@@ -113,17 +151,18 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
             <Label htmlFor="role">Cargo</Label>
             <Select
               value={formData.role}
-              onValueChange={(value) =>
+              onValueChange={(value: UserRole) =>
                 setFormData({ ...formData, role: value })
               }
             >
-              <SelectTrigger>
+              <SelectTrigger className="text-slate-500">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="ADMIN">Administrador</SelectItem>
                 <SelectItem value="SUPERVISOR">Supervisor</SelectItem>
                 <SelectItem value="CASHIER">Caixa</SelectItem>
+                <SelectItem value="EMPLOYEE">Funcionário</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -132,6 +171,7 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
             <Input
               id="userCode"
               type="number"
+              className="text-slate-500"
               value={formData.userCode}
               onChange={(e) =>
                 setFormData({ ...formData, userCode: e.target.value })
@@ -145,6 +185,7 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
               id="password"
               type="password"
               value={formData.password}
+              className="text-slate-500"
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
@@ -155,6 +196,7 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
             <Label htmlFor="phone">Telefone</Label>
             <Input
               id="phone"
+              className="text-slate-500"
               value={formData.phone}
               onChange={(e) =>
                 setFormData({ ...formData, phone: e.target.value })
@@ -162,9 +204,7 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
             />
           </div>
           <DialogFooter>
-            <Button type="submit">
-              {employee ? "Salvar" : "Cadastrar"}
-            </Button>
+            <Button type="submit">{employee ? "Salvar" : "Cadastrar"}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
