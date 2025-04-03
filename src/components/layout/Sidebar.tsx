@@ -65,19 +65,21 @@ export function Sidebar({ role }: SidebarProps) {
       <div
         ref={sidebarRef}
         className={cn(
-          "fixed top-0 left-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-200 ease-in-out z-40",
+          "fixed top-0 left-0 h-full w-64 bg-background shadow-lg transform transition-transform duration-200 ease-in-out z-40",
           {
             "-translate-x-full": !isOpen,
             "translate-x-0": isOpen,
           },
-          "lg:translate-x-0"
+          "lg:translate-x-0",
         )}
       >
         <div className="p-6">
-          <h1 className="text-2xl font-heading font-bold text-primary mb-8">
+          <h1 className="text-2xl font-heading font-bold text-primary mb-8 hidden lg:block">
             TEMM CODE
           </h1>
-          <MenuComponent />
+          <div className="pt-28 lg:pt-0">
+            <MenuComponent />
+          </div>
         </div>
       </div>
     </>

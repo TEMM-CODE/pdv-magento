@@ -15,8 +15,6 @@ const menuItems = [
 ];
 
 export function CustomerMenu() {
-
-
   return (
     <nav className="space-y-2">
       {menuItems.map((item) => {
@@ -26,11 +24,12 @@ export function CustomerMenu() {
             key={item.path}
             to={item.path}
             className={cn(
-              "flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-colors",
+              "flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-colors text-foreground",
               {
                 "bg-primary text-white": location.pathname === item.path,
-                "hover:bg-gray-100": location.pathname !== item.path,
-              }
+                "hover:bg-secondary/70 hover:text-primary":
+                  location.pathname !== item.path,
+              },
             )}
           >
             <Icon size={20} />
