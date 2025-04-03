@@ -1,23 +1,24 @@
+import { Layout } from "@/components/layout/Layout";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ProfileSettings } from "@/components/settings/ProfileSettings";
+import { AppearanceSettings } from "@/components/settings/AppearanceSettings";
+import { SystemSettings } from "@/components/settings/SystemSettings";
 
-import { Layout } from '@/components/layout/Layout'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ProfileSettings } from '@/components/settings/ProfileSettings'
-import { AppearanceSettings } from '@/components/settings/AppearanceSettings'
-import { SystemSettings } from '@/components/settings/SystemSettings'
+import { createFileRoute } from "@tanstack/react-router";
 
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/admin/configuracoes')({
+export const Route = createFileRoute("/admin/configuracoes")({
   component: Settings,
-})
+});
 
 export default function Settings() {
   return (
     <Layout role="admin">
-      <div className="container py-6">
-        <h1 className="text-3xl font-bold mb-6">Configurações</h1>
+      <div>
+        <h1 className="text-3xl text-foreground font-bold mb-6 font-heading">
+          Configurações
+        </h1>
         <Tabs defaultValue="profile" className="space-y-4">
-          <TabsList>
+          <TabsList className="gap-2">
             <TabsTrigger value="profile">Perfil</TabsTrigger>
             <TabsTrigger value="appearance">Aparência</TabsTrigger>
             <TabsTrigger value="system">Sistema</TabsTrigger>
@@ -34,5 +35,5 @@ export default function Settings() {
         </Tabs>
       </div>
     </Layout>
-  )
+  );
 }

@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "light" | "dark" | "system";
-type PrimaryColor = "blue" | "purple" | "green" | "orange";
+export type Theme = "light" | "dark" | "system";
+export type PrimaryColor = "blue" | "purple" | "green" | "orange";
 
 interface ThemeContextType {
   theme: Theme;
@@ -36,13 +36,22 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [theme]);
 
   useEffect(() => {
+    if (localStorage.getItem("primaryColor")) {
+      setPrimaryColor(localStorage.getItem("primaryColor") as PrimaryColor);
+    }
+    if (localStorage.getItem("theme")) {
+      setTheme(localStorage.getItem("theme") as Theme);
+    }
+  }, []);
+
+  useEffect(() => {
     const root = document.documentElement;
 
     // Apply primary color
     root.style.setProperty("--primary", `var(--${primaryColor})`);
     root.style.setProperty(
       "--primary-foreground",
-      `var(--${primaryColor}-foreground)`
+      `var(--${primaryColor}-foreground)`,
     );
   }, [primaryColor]);
 
