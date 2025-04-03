@@ -2,7 +2,56 @@ import { User } from "@/types";
 import { axiosApi } from "../api";
 
 // Mock users data
-const mockUsers: User[] = [];
+const mockUsers: User[] = [
+  {
+    id: 1,
+    firstname: "John",
+    lastname: "Doe",
+    email: "john.doe@example.com",
+    role: "EMPLOYEE",
+    taxvat: "123456789",
+    addresses: [
+      {
+        region: {
+          region_code: "US-CA",
+          region: "California",
+          region_id: 1,
+          extension_attributes: {},
+        },
+        country_id: "US",
+        street: ["123 Main St", "Suite 100"],
+        city: "Los Angeles",
+        postcode: "90001",
+        telephone: "+1 555-1234",
+        default_shipping: true,
+      },
+    ],
+  },
+  {
+    id: 2,
+    firstname: "Jane",
+    lastname: "Smith",
+    email: "jane.smith@example.com",
+    role: "EMPLOYEE",
+    taxvat: "987654321",
+    addresses: [
+      {
+        region: {
+          region_code: "US-NY",
+          region: "New York",
+          region_id: 2,
+          extension_attributes: {},
+        },
+        country_id: "US",
+        street: ["456 Elm St", "Apt 12B"],
+        city: "New York",
+        postcode: "10001",
+        telephone: "+1 555-5678",
+        default_billing: true,
+      },
+    ],
+  },
+];
 
 export const userApi = {
   async getUsers(): Promise<User[]> {
@@ -17,7 +66,7 @@ export const userApi = {
 
   async createUser(
     user: Omit<User, "id" | "role" | "adress">,
-    password: string
+    password: string,
   ): Promise<User> {
     const newUser = {
       customer: {
